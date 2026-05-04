@@ -1,0 +1,21 @@
+name: fab_menu_expressive
+description: "A Material 3 Expressive FAB Menu implementation for Flutter. Replicates the Jetpack Compose Material 3 FAB Menu component."
+version: 0.0.1
+repository: https://github.com/canine-labs/fab-menu
+homepage: https://github.com/canine-labs/fab-menu
+issue_tracker: https://github.com/canine-labs/fab-menu/issues
+
+environment:
+  sdk: ^3.0.0
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
