@@ -1,4 +1,4 @@
-## 0.0.1
+## 0.5.0
 
 * Initial release.
 * Implemented Material 3 Expressive FAB Menu.
