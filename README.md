@@ -12,6 +12,9 @@ This package provides a minimal, accurate, and animated implementation of the FA
 - **Flexible Alignment**: Automatically adjusts layout based on screen position.
 - **Minimal API**: Designed to be familiar to Jetpack Compose developers.
 
+## Demo
+https://github.com/user-attachments/assets/b4925cd1-9fbe-4104-8cde-c4a127ff459d
+
 ## Getting started
 
 Add the dependency to your `pubspec.yaml`:
