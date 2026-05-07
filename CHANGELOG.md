@@ -1,3 +1,8 @@
+## 0.6.0
+
+* improved animations.
+* floating action issue solved.
+
 ## 0.5.0
 
 * Initial release.
