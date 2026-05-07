@@ -55,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: AnimatedRotation(
             turns: _expanded ? 0.125 : 0,
             duration: const Duration(milliseconds: 200),
-            child: Icon(_expanded ? Icons.add : Icons.add),
+            child: const Icon(Icons.add),
           ),
         ),
         children: [

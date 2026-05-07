@@ -35,6 +35,8 @@ class FloatingActionButtonMenu extends StatefulWidget {
 class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  List<CurvedAnimation> _animations = [];
+  List<Animation<Offset>> _slideAnimations = [];
 
   @override
   void initState() {
@@ -45,11 +47,37 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
       reverseDuration: const Duration(milliseconds: 200),
       vsync: this,
     );
+    _buildAnimations();
+  }
+
+  void _buildAnimations() {
+    for (final a in _animations) {
+      a.dispose();
+    }
+    final n = widget.children.length;
+    _animations = List.generate(n, (index) {
+      final childIndex = n - 1 - index;
+      final step = 1.0 / n;
+      final start = childIndex * step * 0.5;
+      final end = start + 0.5;
+      return CurvedAnimation(
+        parent: _controller,
+        curve: Interval(start, end, curve: Curves.easeOutCubic),
+      );
+    });
+    _slideAnimations = _animations
+        .map((a) => a.drive(
+              Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero),
+            ))
+        .toList();
   }
 
   @override
   void didUpdateWidget(FloatingActionButtonMenu oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.children.length != oldWidget.children.length) {
+      _buildAnimations();
+    }
     if (widget.expanded != oldWidget.expanded) {
       if (widget.expanded) {
         _controller.forward();
@@ -61,6 +89,9 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
 
   @override
   void dispose() {
+    for (final a in _animations) {
+      a.dispose();
+    }
     _controller.dispose();
     super.dispose();
   }
@@ -73,38 +104,35 @@ class _FloatingActionButtonMenuState extends State<FloatingActionButtonMenu>
         ? CrossAxisAlignment.start
         : CrossAxisAlignment.center;
 
+    final items = List.generate(widget.children.length, (index) {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 4.0),
+        child: FadeTransition(
+          opacity: _animations[index],
+          child: SlideTransition(
+            position: _slideAnimations[index],
+            child: widget.children[index],
+          ),
+        ),
+      );
+    });
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: crossAxisAlignment,
       children: [
-        ...List.generate(widget.children.length, (index) {
-          // Reverse index so the top item is the last to animate in and first to animate out
-          final childIndex = widget.children.length - 1 - index;
-
-          final step = 1.0 / widget.children.length;
-          final start = childIndex * step * 0.5;
-          final end = start + 0.5;
-
-          final animation = CurvedAnimation(
-            parent: _controller,
-            curve: Interval(start, end, curve: Curves.easeOutCubic),
-          );
-
-          final child = widget.children[index];
-
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 4.0),
-            child: FadeTransition(
-              opacity: animation,
-              child: SlideTransition(
-                position: animation.drive(
-                  Tween<Offset>(begin: const Offset(0, 0.2), end: Offset.zero),
-                ),
-                child: child,
-              ),
-            ),
-          );
-        }),
+        AnimatedBuilder(
+          animation: _controller,
+          builder: (context, child) => IgnorePointer(
+            ignoring: _controller.isDismissed,
+            child: child,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: crossAxisAlignment,
+            children: items,
+          ),
+        ),
         widget.button,
       ],
     );
